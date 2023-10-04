@@ -4,7 +4,6 @@ import Link from "next/link";
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/DeleteThread";
 import LikeButton from '../shared/LikeButton';
-import LikeCard from "../../1 draft/add-likepage/LikeCard";
 ;
 import { createThread } from "@/lib/actions/thread.actions";
 import { Button } from "../ui/button";
@@ -160,22 +159,6 @@ interface Props {
               </Link>
             </div>
           )}
-
-        {!isLike && like && like.length > 0 && (
-            <div className='ml-1 mt-3 flex items-center gap-2'>
-              {like.slice(0, 2).map((like, index) => (
-                <LikeCard
-                />
-               ))}
-          
-              <Link href={`/thread/${id}`}>
-                <p className='mt-1 text-subtle-medium text-gray-1'>
-                  {like.length} lik{like.length > 1 ? "e" : "es"}
-                </p>
-              </Link>
-
-            </div>
-        )}
 
 
         {!isComment && community && (
