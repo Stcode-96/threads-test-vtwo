@@ -8,6 +8,9 @@ import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
 
+import mongoose from "mongoose";
+
+
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();
 
@@ -84,6 +87,9 @@ export async function createThread({ text, author, communityId, path }: Params
     }
 
     revalidatePath(path);
+
+    // Return the created thread ID
+    return createdThread._id;
   } catch (error: any) {
     throw new Error(`Failed to create thread: ${error.message}`);
   }
@@ -216,6 +222,10 @@ export async function addCommentToThread(
       throw new Error("Thread not found");
     }
 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error("Invalid userId");
+    }
+
     // Create the new comment thread
     const commentThread = new Thread({
       text: commentText,
@@ -238,3 +248,99 @@ export async function addCommentToThread(
     throw new Error("Unable to add comment");
   }
 }
+
+
+export async function addLikeThread(
+    userId: string, 
+    threadId: string, 
+    path: string, 
+    likeText: string
+  ) {
+  try {
+    connectToDB();
+
+    // Find the original thread by its ID
+    const originalThread = await Thread.findById(threadId);
+
+    if (!originalThread) {
+      throw new Error("Thread not found");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error("Invalid userId");
+    }
+
+    // Create the new like thread
+    const likeThread = new Thread({
+      text: likeText,
+      author: userId,
+      parentId: threadId, // Set the parentId to the original thread's ID
+    });
+
+    // Save the like thread to the database
+    const savedLikeThread = await likeThread.save();
+
+    // Add the like thread's ID to the original thread's children array
+    originalThread.children.push(savedLikeThread._id);
+
+    // Push the like thread's ID to the original thread's likes array
+    originalThread.likes.push(savedLikeThread._id);
+
+    // Save the updated original thread to the database
+    await originalThread.save();
+
+    revalidatePath(path);
+
+    console.log("Adding like for user:", userId);
+    console.log("Thread ID:", threadId);
+  } catch (err) {
+    console.error("Error while adding like:", err);
+    throw new Error("Unable to add like");
+  }
+}
+
+export async function repostThread(
+  userId: string,
+  threadId: string,
+  path: string
+) {
+  try {
+    connectToDB();
+
+    // Find the original thread by its ID
+    const originalThread = await Thread.findById(threadId);
+
+    if (!originalThread) {
+      throw new Error("Thread not found");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error("Invalid userId");
+    }
+
+    // Create the new repost thread
+    const repostThread = new Thread({
+      text: "Repost",
+      author: userId,
+      parentId: threadId, // Set the parentId to the original thread's ID
+    });
+
+    // Save the repost thread to the database
+    const savedRepostThread = await repostThread.save();
+
+    // Add the repost thread's ID to the original thread's children array
+    originalThread.children.push(savedRepostThread._id);
+
+    // Save the updated original thread to the database
+    await originalThread.save();
+
+    revalidatePath(path);
+
+    console.log("Reposting for user:", userId);
+    console.log("Thread ID:", threadId);
+  } catch (err) {
+    console.error("Error while reposting:", err);
+    throw new Error("Unable to repost");
+  }
+}
+

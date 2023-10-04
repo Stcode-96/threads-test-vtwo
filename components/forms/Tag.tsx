@@ -26,13 +26,13 @@ interface Props {
     currentUserId: string;
 }
 
-const Comment = ({threadId, currentUserImg, currentUserId}: Props) => {
+const Tag = ({threadId, currentUserImg, currentUserId}: Props) => {
     const pathname = usePathname();
 
     const form = useForm({
         resolver: zodResolver(CommentValidation),
         defaultValues: {
-            thread: "" // Set the default value here
+            thread: ""
         },
     });
 
@@ -69,23 +69,28 @@ const Comment = ({threadId, currentUserImg, currentUserId}: Props) => {
                                 />
                             </FormLabel>
                             <FormControl className="border-none bg-transparent">
-                                <Input
+                                {/* <Input
                                     type="text"
-                                    placeholder="Comment..."
+                                    placeholder="Like..."
                                     className="no-focus text-light-1 outline-none"
                                     {...field}
-                                />
+                                /> */}
+                                <FormLabel
+                                    className="text-white"
+                                >
+                                    <>liked your post</>
+                                </FormLabel>
                             </FormControl>
                         </FormItem>
                     )}
                 />
 
                 <Button type="submit" className="comment-form_btn">
-                    Reply
+                    Tag
                 </Button>       
             </form>
         </Form>
  )
 }
 
-export default Comment;
+export default Tag;

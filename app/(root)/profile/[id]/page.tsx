@@ -7,6 +7,7 @@ import Image from "next/image";
 
 import { profileTabs } from "@/constants";
 import ThreadsTab from "@/components/shared/ThreadsTab";
+import RepliesTab from "@/components/rightsidemenu/profile/RepliesTab";
 
 
 async function Page({ params }: { params: { id: string } }) {
@@ -54,15 +55,21 @@ async function Page({ params }: { params: { id: string } }) {
             ))}
           </TabsList>
 
-          {profileTabs.map((tab) => (
-            <TabsContent key={`content-${tab.label}`} value={tab.value} className="w-full text-light-1">
+          <TabsContent value='threads' className='w-full text-light-1'>
+            {profileTabs.map((tab) => (
+          
               <ThreadsTab
                 currentUserId={user.id}
                 accountId={userInfo.id}
                 accountType="User"
               />
+            ))}
             </TabsContent>
-          ))}
+
+          <TabsContent value='replies'>
+            <RepliesTab />            
+          </TabsContent>
+
         </Tabs>
       </div>
     </section>

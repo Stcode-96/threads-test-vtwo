@@ -6,6 +6,7 @@ import ThreadCard from "@/components/cards/ThreadCard";
 
 import { fetchUser } from "@/lib/actions/user.actions";
 import { fetchThreadById } from "@/lib/actions/thread.actions";
+import Like from "@/lib/models/like.models";
 
 export const revalidate = 0;
 
@@ -25,31 +26,15 @@ async function page({ params }: { params: { id: string } }) {
       <div>
         <ThreadCard
           id={thread._id}
-          currentUserId={user?.id || ""}
+          currentUserId={user.id}
           parentId={thread.parentId}
           content={thread.text}
           author={thread.author}
           community={thread.community}
           createdAt={thread.createdAt}
           comments={thread.children}
+          like={thread.like}
         />
-      </div>
-
-      <div className='mt-10'>
-        {thread.children.map((childItem: any) => (
-          <ThreadCard
-            key={childItem._id}
-            id={childItem._id}
-            currentUserId={user?.id || ""}
-            parentId={childItem.parentId}
-            content={childItem.text}
-            author={childItem.author}
-            community={childItem.community}
-            createdAt={childItem.createdAt}
-            comments={childItem.children}
-            isComment
-          />
-        ))}
       </div>
 
       <div className='mt-7'>
@@ -58,6 +43,24 @@ async function page({ params }: { params: { id: string } }) {
           currentUserImg={user.imageUrl}
           currentUserId={JSON.stringify(userInfo._id)}
         />
+      </div>
+
+      <div className='mt-10'>
+        {thread.children.map((childItem: any) => (
+          <ThreadCard
+            key={childItem._id}
+            id={childItem._id}
+            currentUserId={user.id}
+            parentId={childItem.parentId}
+            content={childItem.text}
+            author={childItem.author}
+            community={childItem.community}
+            createdAt={childItem.createdAt}
+            comments={childItem.children}
+            like={thread.like}
+            isComment        
+          />
+        ))}
       </div>
     </section>
   );

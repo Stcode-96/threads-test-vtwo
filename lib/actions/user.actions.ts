@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import Community from "../models/community.model";
 import Thread from "../models/thread.model";
 import User from "../models/user.model";
+import Like from "../models/like.models";
 
 import { connectToDB } from "../mongoose";
 
@@ -181,3 +182,31 @@ export async function getActivity(userId: string) {
     throw error;
   }
 }
+
+export async function getLikes(userId: string) {
+  try {
+    // Find all threads created by the user
+    const userThreads = await Thread.find({ author: userId });
+
+    // Collect all the liked thread ids from the 'likes' field of each user thread
+    const likedThreadIds = userThreads.reduce((acc, userThread) => {
+      return acc.concat(userThread.likes);
+    }, []);
+
+    // Find and return the liked threads excluding the ones created by the same user
+    const likedThreads = await Thread.find({
+      _id: { $in: likedThreadIds },
+      author: { $ne: userId }, // Exclude threads authored by the same user
+    }).populate({
+      path: "author",
+      model: User,
+      select: "name image _id",
+    });
+
+    return likedThreads;
+  } catch (error) {
+    console.error("Error fetching liked threads: ", error);
+    throw error;
+  }
+}
+

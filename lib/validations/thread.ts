@@ -12,3 +12,8 @@ export const CommentValidation = z.object({
     z.string().nonempty().min(3, 
     { message: "Minimum 3 characters." }),
 });
+
+export const LikeValidation = z.string().regex(
+  /^.*liked your post.*$/,
+  { message: "Label must contain 'liked your post'." }
+);

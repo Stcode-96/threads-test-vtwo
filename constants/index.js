@@ -42,3 +42,8 @@ export const sidebarLinks = [
     { value: "members", label: "Members", icon: "/assets/members.svg" },
     { value: "requests", label: "Requests", icon: "/assets/request.svg" },
   ];
+
+  export const threadTabs = [
+    { value: "likes", label: "Likes", icon: "/assets/heart-gray.svg" },
+    { value: "Comments", label: "Comments", icon: "/assets/reply.svg" },
+  ];
